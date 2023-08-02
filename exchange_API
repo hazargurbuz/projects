@@ -1,0 +1,39 @@
+import requests
+
+def get_exchange_rates(base_currency):
+    url = f"https://api.exchangeratesapi.io/latest?base={base_currency}"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        data = response.json()
+        return data['rates']
+    else:
+        print("Döviz kurları alınamadı.")
+        return None
+
+def convert_currency(amount, base_currency, target_currency):
+    rates = get_exchange_rates(base_currency)
+
+    if not rates:
+        return None
+
+    if target_currency not in rates:
+        print(f"{target_currency} dövizi bulunamadı.")
+        return None
+
+    rate = rates[target_currency]
+    converted_amount = amount * rate
+    return converted_amount
+
+if __name__ == "__main__":
+    try:
+        amount = float(input("Çevirmek istediğiniz miktarı girin: "))
+        base_currency = input("Mevcut döviz birimi (Örn: USD, EUR, TRY): ").upper()
+        target_currency = input("Çevrilmek istenen döviz birimi (Örn: USD, EUR, TRY): ").upper()
+
+        converted_amount = convert_currency(amount, base_currency, target_currency)
+
+        if converted_amount is not None:
+            print(f"{amount:.2f} {base_currency} = {converted_amount:.2f} {target_currency}")
+    except ValueError:
+        print("Hatalı giriş yaptınız. Lütfen geçerli bir miktar girin.")
